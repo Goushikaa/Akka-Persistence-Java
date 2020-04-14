@@ -129,6 +129,7 @@ public class ShoppingCart
                         .thenRun(updatedCart -> System.out.println("Updated cart " + updatedCart.items + " after removing an item:" + cmd.itemId));
             } else {
                 System.out.println("Cart does'nt have given item:" + cmd.itemId);
+                return Effect().none();
             }
         }
     }
