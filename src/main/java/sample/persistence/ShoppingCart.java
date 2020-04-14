@@ -119,11 +119,7 @@ public class ShoppingCart
                 System.out.println("Item '" + cmd.itemId + "' was already added to this shopping cart");
                 return Effect().none();
             } else {
-                return Effect().persist(new ItemAdded(cartId, cmd.itemId, cmd.quantity))
-                        .thenRun(updatedCart -> {
-                            System.out.println("Newly added item:" + updatedCart.items);
-                            System.out.println("Last sequence number:" + lastSequenceNumber(actorContext));
-                        });
+                return Effect().persist(new ItemAdded(cartId, cmd.itemId, cmd.quantity));
             }
         }
 
@@ -132,19 +128,23 @@ public class ShoppingCart
                 return Effect().persist(new ItemRemoved(cartId, cmd.itemId))
                         .thenRun(updatedCart -> System.out.println("Updated cart " + updatedCart.items + " after removing an item:" + cmd.itemId));
             } else {
-                System.out.println("unprocessed event:" + state.items);
-                return Effect().stash();
+                System.out.println("Cart does'nt have given item:" + cmd.itemId);
             }
         }
     }
 
     public static void main(String[] args) {
-        String cartId = "Demo1";
+        String cartId = "Demo13";
         ActorSystem<Command> actorSystem = ActorSystem.create(ShoppingCart.create(cartId), "AkkaDemo");
         actorSystem.tell(new View());
         actorSystem.tell(new AddItem("foo", 42));
+        actorSystem.tell(new View());
+        actorSystem.tell(new RemoveItem("bar"));
+        actorSystem.tell(new View());
         actorSystem.tell(new AddItem("bar", 25));
+        actorSystem.tell(new View());
         actorSystem.tell(new RemoveItem("foo"));
+        actorSystem.tell(new View());
     }
 }
 
